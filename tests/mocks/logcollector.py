@@ -1,9 +1,12 @@
-import sys
+import sys, os
+import zipfile
+
 from PyQt5.QtWidgets import (
     QApplication, QWidget, QLabel, QComboBox, QLineEdit,
     QPushButton, QTextEdit, QFileDialog, QVBoxLayout, QHBoxLayout, QGridLayout, QGroupBox, QCheckBox, QMessageBox
 )
 from PyQt5.QtCore import QTimer
+
 
 class MockLogCollectorApp(QWidget):
     def __init__(self):
@@ -155,7 +158,20 @@ class MockLogCollectorApp(QWidget):
 
     def complete_collection(self):
         if not self.collect_button.text() == 'Collect':
-            self.log_panel.append(f'Collection complete. File saved at {self.save_location.text()}')
+            save_path = self.save_location.text()
+            zip_filename = os.path.join(save_path, 'collected_logs.zip')
+
+            with zipfile.ZipFile(zip_filename, 'w') as zipf:
+                # Add fake data files to the zip
+                for i in range(1, 4):
+                    filename = f'logfile_{i}.txt'
+                    filepath = os.path.join(save_path, filename)
+                    with open(filepath, 'w') as f:
+                        f.write(f'This is a fake log file {i}')
+                    zipf.write(filepath, os.path.basename(filepath))
+                    os.remove(filepath)  # Clean up the fake data file after adding to the zip
+
+            self.log_panel.append(f'Collection complete. File saved at {zip_filename}')
             self.collect_button.setText('Collect')
             self.collect_button.clicked.disconnect()
             self.collect_button.clicked.connect(self.start_collection)
