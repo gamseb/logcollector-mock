@@ -28,6 +28,7 @@ class MockLogCollectorApp(QWidget):
         profile_label = QLabel('Collection Profile:')
         self.collection_profile = QComboBox()
         self.collection_profile.addItems(['Default', 'All', 'None', 'Custom'])
+        self.collection_profile.currentIndexChanged.connect(self.update_profile)
         profile_layout.addWidget(profile_label)
         profile_layout.addWidget(self.collection_profile)
 
@@ -103,6 +104,7 @@ class MockLogCollectorApp(QWidget):
                 label = QLabel(artifacts_labels[section_indices.index(i)])
                 artifacts_layout.addWidget(label, row, 0, 1, 2)
                 row += 1
+            checkbox.stateChanged.connect(self.on_checkbox_state_changed)
             artifacts_layout.addWidget(checkbox, row, 0, 1, 2)
             row += 1
 
@@ -118,6 +120,13 @@ class MockLogCollectorApp(QWidget):
         main_layout.addLayout(log_panel_layout)
 
         self.setLayout(main_layout)
+
+        # Set default profile at the start
+        self.manual_change = False
+        self.set_default_profile()
+        self.collection_profile.setCurrentIndex(0)
+        self.manual_change = True
+
 
     def browse_save_location(self):
         save_path = QFileDialog.getExistingDirectory(self, 'Select Directory')
@@ -151,6 +160,36 @@ class MockLogCollectorApp(QWidget):
             self.collect_button.clicked.disconnect()
             self.collect_button.clicked.connect(self.start_collection)
             QMessageBox.information(self, 'Success', 'Collection complete!')
+
+    def update_profile(self):
+        profile = self.collection_profile.currentText()
+        self.manual_change = False
+        if profile == 'Default':
+            self.set_default_profile()
+        elif profile == 'All':
+            self.set_all_profile()
+        elif profile == 'None':
+            self.set_none_profile()
+        self.manual_change = True
+
+    def set_default_profile(self):
+        for checkbox in self.artifacts_checkboxes:
+            checkbox.setChecked(False)
+        for i in range(len(self.artifacts_checkboxes)):
+            if i in [0, 1, 2, 3, 4, 7, 9, 11, 12]:
+                self.artifacts_checkboxes[i].setChecked(True)
+
+    def set_all_profile(self):
+        for checkbox in self.artifacts_checkboxes:
+            checkbox.setChecked(True)
+
+    def set_none_profile(self):
+        for checkbox in self.artifacts_checkboxes:
+            checkbox.setChecked(False)
+
+    def on_checkbox_state_changed(self):
+        if self.manual_change and self.collection_profile.currentText() != 'Custom':
+            self.collection_profile.setCurrentText('Custom')
 
 if __name__ == '__main__':
     app = QApplication(sys.argv)
