@@ -52,6 +52,7 @@ class MockLogCollectorApp(QWidget):
         # Save Location
         save_label = QLabel('Save Location:')
         self.save_location = QLineEdit()
+        self.save_location.setText(os.getcwd())  # Set the default text to the current directory
         self.browse_button = QPushButton('Browse')
         self.browse_button.clicked.connect(self.browse_save_location)
         self.save_location.textChanged.connect(self.check_save_location)
