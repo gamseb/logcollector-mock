@@ -42,6 +42,6 @@ else
 fi
 
 # Clean up
-rm -rf build "$SCRIPT_NAME.spec" venv
+rm -rf build "$SCRIPT_NAME.spec" build_env
 
 echo "Done."
