@@ -27,14 +27,14 @@ source build_env/bin/activate
 # Install PyInstaller in the virtual environment
 pip install pyinstaller
 
-# Run PyInstaller to build the executable
-pyinstaller --onefile "$PYTHON_SCRIPT"
+# Run PyInstaller to build the executable for 64-bit Windows
+pyinstaller --onefile --platform "win64" --name "$SCRIPT_NAME.exe" "$PYTHON_SCRIPT"
 
 # Deactivate the virtual environment
 deactivate
 
 # Check if the build was successful
-if [ -f "dist/$SCRIPT_NAME" ]; then
+if [ -f "dist/$SCRIPT_NAME.exe" ]; then
     echo "Build successful. Executable is located in the 'dist' directory."
 else
     echo "Build failed."
@@ -42,6 +42,6 @@ else
 fi
 
 # Clean up
-rm -rf build "$SCRIPT_NAME.spec" build_env
+rm -rf build "$SCRIPT_NAME.spec" venv
 
 echo "Done."
