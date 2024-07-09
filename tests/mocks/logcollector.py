@@ -62,7 +62,7 @@ class MockLogCollectorApp(QWidget):
 
         # Collect Button
         self.collect_button = QPushButton('Collect')
-        self.collect_button.setEnabled(False)  # Initially disabled
+        self.collect_button.setEnabled(True)  # Initially enabled
         self.collect_button.clicked.connect(self.start_collection)
         button_layout.addWidget(self.collect_button)
 
